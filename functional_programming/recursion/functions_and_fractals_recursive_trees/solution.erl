@@ -10,25 +10,25 @@ iter_map(F, FLineEnd, Table, M, N) ->
     F(Table, {M, N}),
     iter_map(F, FLineEnd, Table, M, N+1).
 
-grew(_, TargetPosX, TargetPosX, _) ->
+grow(_, TargetPosX, TargetPosX, _) ->
     ok;
-grew(Table, PosX, TargetPosX, PosY) ->
+grow(Table, PosX, TargetPosX, PosY) ->
     ets:insert(Table, {{PosX, PosY}, 1}),
-    grew(Table, PosX - 1, TargetPosX, PosY).
+    grow(Table, PosX - 1, TargetPosX, PosY).
 
-grew_branch(_, TargetPosX, TargetPosX, _, _) ->
+grow_branch(_, TargetPosX, TargetPosX, _, _) ->
     ok;
-grew_branch(Table, PosX, TargetPosX, PosY, Width) ->
+grow_branch(Table, PosX, TargetPosX, PosY, Width) ->
     ets:insert(Table, {{PosX, PosY + Width}, 1}),
     ets:insert(Table, {{PosX, PosY - Width}, 1}),
-    grew_branch(Table, PosX - 1, TargetPosX, PosY, Width + 1).
+    grow_branch(Table, PosX - 1, TargetPosX, PosY, Width + 1).
 
 recutree(_, 0, _, _, _) ->
     ok;
 recutree(Table, N, PosX, PosY, Height) ->
     HalfHeight = Height div 2,
-    grew(       Table, PosX,          PosX - HalfHeight, PosY),
-    grew_branch(Table, PosX - HalfHeight, PosX - Height, PosY, 1),
+    grow(       Table, PosX,          PosX - HalfHeight, PosY),
+    grow_branch(Table, PosX - HalfHeight, PosX - Height, PosY, 1),
     recutree(Table, N-1, PosX - Height, PosY + HalfHeight, HalfHeight),
     recutree(Table, N-1, PosX - Height, PosY - HalfHeight, HalfHeight).
 
