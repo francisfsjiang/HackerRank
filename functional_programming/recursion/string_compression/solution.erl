@@ -2,28 +2,24 @@
 -export([main/0]).
 
 str_compress([Ch | Str]) ->
-    str_compress(Str, Ch, 1, []).
+    str_compress(Str, Ch, 1).
 
-str_compress([], LastCH, LastCount, CompressedStr) ->
+str_compress([], LastCH, LastCount) ->
     if
-        LastCount == 1 -> CompressedStr ++ [LastCH];
-        true -> CompressedStr ++ [LastCH] ++ integer_to_list(LastCount)
+        LastCount == 1 -> io:format("~c", [LastCH]);
+        true -> io:format("~c~w", [LastCH, LastCount])
     end;
-str_compress([CH | RestStr], LastCH, LastCount, CompressedStr) ->
+str_compress([CH | RestStr], LastCH, LastCount) ->
     if
-        CH == LastCH -> str_compress(RestStr, LastCH, LastCount + 1, CompressedStr);
+        CH == LastCH -> str_compress(RestStr, LastCH, LastCount + 1);
         LastCount == 1 ->
-            str_compress(RestStr,
-                                 CH,
-                                 1,
-                                 CompressedStr ++ [LastCH]);
-        true -> str_compress(RestStr,
-                             CH,
-                             1,
-                             CompressedStr ++ [LastCH] ++ integer_to_list(LastCount))
+            io:format("~c", [LastCH]),
+            str_compress(RestStr, CH, 1);
+        true ->
+            io:format("~c~w", [LastCH,LastCount]),
+            str_compress(RestStr, CH, 1)
     end.
 
 main() ->
     {ok, [Str]} = io:fread("", "~s"),
-    Compressed = str_compress(Str),
-    io:format("~s", [Compressed]).
+    str_compress(Str).
