@@ -19,18 +19,18 @@ parse_row(Map, M, N, [CH|Str]) ->
     NewMap = maps:put({M, N}, CH, Map),
     parse_row(NewMap, M, N + 1, Str).
 
-display(_, 11, 12) ->
+display(_, 10, 11) ->
     io:format("~n"),
     ok;
-display(Map, M, 12) ->
+display(Map, M, 11) ->
     io:format("~n"),
-    display(Map, M + 1, 0);
+    display(Map, M + 1, 1);
 display(Map, M, N) ->
     io:format("~c", [maps:get({M, N}, Map)]),
     display(Map, M, N + 1).
 
 count_blank(Map, M, N, Direction) ->
-    io:format("~p,~p~n~p~n", [M, N, Direction]),
+    % io:format("~p,~p~n~p~n", [M, N, Direction]),
     {DirX, DirY} = Direction,
     Next = maps:get({M + DirX, N + DirY}, Map),
     if
@@ -73,7 +73,7 @@ find_blanksU(Map, M, N, Blanks) ->
     end.
 
 read_words() ->
-    {ok, [OriginStr]} = io:fread("","~s"),
+    {ok, [OriginStr]} = io:fread("", "~s"),
     StrList = string:tokens(OriginStr, ";"),
     lists:sort(fun({A, _}, {B, _}) -> A < B end,
                lists:map(fun(X) -> {length(X), X} end, StrList)).
@@ -82,7 +82,7 @@ try_fill_blanks(Map, {{_, _}, {_, _}, 0}, _) ->
     {true, Map};
 try_fill_blanks(Map, {{PosX, PosY}, {DirX, DirY}, Len}, [Ch | RestWords]) ->
     OriginCh  = maps:get({PosX, PosY}, Map),
-    io:format("~p,~p,~p~n", [OriginCh, Ch, Len]),
+    % io:format("~p,~p,~p~n", [OriginCh, Ch, Len]),
     if
         (OriginCh == $-) or (OriginCh == Ch) ->
             NewMap = maps:put({PosX, PosY}, Ch, Map),
@@ -94,12 +94,12 @@ try_fill_blanks(Map, {{PosX, PosY}, {DirX, DirY}, Len}, [Ch | RestWords]) ->
 
 fill_blanks(Map, [], _, _) ->
     {true, Map};
-fill_blanks(Map, [_ | _], _, []) ->
+fill_blanks(Map, _, _, []) ->
     {false, Map};
 fill_blanks(Map, [Blank | RestBlanks], WordsList, [WordNow | RestWords]) ->
-    io:format("~p~n", [Blank]),
-    io:format("~p~n", [WordNow]),
-    display(Map, 0, 0),
+    % io:format("~p~n", [Blank]),
+    % io:format("~p~n", [WordNow]),
+    % display(Map, 1, 1),
     {{_, _}, {_, _}, Len} = Blank,
     {WordLen, Word} = WordNow,
     if
@@ -110,8 +110,8 @@ fill_blanks(Map, [Blank | RestBlanks], WordsList, [WordNow | RestWords]) ->
                 {true, NewMap} ->
                     case fill_blanks(NewMap, RestBlanks, WordsList, WordsList) of
                         {true, ResultMap} ->
-                            ResultMap;
-                        {false, Map} ->
+                            {true, ResultMap};
+                        {false, _} ->
                             fill_blanks(Map, [Blank | RestBlanks], WordsList, RestWords)
                     end;
                 {false, _} ->
@@ -123,10 +123,12 @@ fill_blanks(Map, [Blank | RestBlanks], WordsList, [WordNow | RestWords]) ->
 
 main() ->
     Map = make_map(maps:new(), 0),
-    display(Map, 0, 0),
+    % display(Map, 1, 1),
     Blanks = lists:sort(fun({_, _, A}, {_, _, B}) -> A < B end,
                         find_blanksL(Map, 1, 1, []) ++ find_blanksU(Map, 1, 1, [])),
-    io:format("~p~n", [Blanks]),
+    % io:format("~p~n", [Blanks]),
     StrList = read_words(),
-    io:format("~p~n", [StrList]),
-    fill_blanks(Map, Blanks, StrList, StrList).
+    % io:format("~p~n", [StrList]),
+    {_, ResultMap} = fill_blanks(Map, Blanks, StrList, StrList),
+    % io:format("~n~n~n"),
+    display(ResultMap, 1, 1).
