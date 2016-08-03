@@ -1,3 +1,11 @@
 *.beam
 *.dump
 *.in
+main
+log
+cmake_install.cmake
+CMakeFiles/
+Makefile
+bin/
+CMakeCache.txt
+.idea/

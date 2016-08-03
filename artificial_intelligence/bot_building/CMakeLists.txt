@@ -1,0 +1,2 @@
+add_subdirectory(bot_save_princess)
+add_subdirectory(bot_save_princess2)
