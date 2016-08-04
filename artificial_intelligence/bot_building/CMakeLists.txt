@@ -1,2 +1,4 @@
 add_subdirectory(bot_save_princess)
 add_subdirectory(bot_save_princess2)
+add_subdirectory(botclean)
+add_subdirectory(botcleanr)
